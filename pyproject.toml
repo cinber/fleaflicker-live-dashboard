@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fleaflicker-dashboard"
+version = "0.1.0"
+description = "Live CLI/TUI dashboards for Fleaflicker fantasy leagues."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "requests",
+  "rich",
+  "textual",
+]
+authors = [{ name = "cinaber" }]
+
+[project.scripts]
+fleaflicker-dashboard = "fleaflicker_dashboard.cli:main"
+fleaflicker-dashboard-tui = "fleaflicker_dashboard.cli:main"
+
+[tool.setuptools]
+packages = ["fleaflicker_dashboard"]

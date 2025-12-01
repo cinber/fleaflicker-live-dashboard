@@ -3,16 +3,27 @@
 This repository contains Python scripts to create interactive dashboards and CLI tools for your Fleaflicker fantasy league. The tools default to **NBA**, but you can specify other sports.
 
 ## Installation
-1. Clone the repository.  
-2. Install dependencies using `pip install -r requirements.txt`.
+1. Clone the repository.
+2. Install in editable mode (preferred for local dev):
+   ```
+   pip install -e .
+   ```
+   Or install the raw dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-## Usage
+## Usage (single app)
+
+All commands now live behind one entry point:
+- Module: `python -m fleaflicker_dashboard ...`
+- Console script (after install): `fleaflicker-dashboard ...`
 
 ### Live TUI dashboard for your team
-Run the TUI with your league and team IDs:
+Launch the Textual UI:
 
 ```
-python fleaflicker_tui.py --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA
+python -m fleaflicker_dashboard tui --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA
 ```
 
 Optionally specify `--position` to filter free agents by position (e.g., PG, SG, SF, PF, C).
@@ -22,13 +33,13 @@ Use the league dashboard script to view the overall league scoreboard, standings
 
 ```
 # Show league scoreboard
-python fleaflicker_league_dashboard.py scoreboard --league YOUR_LEAGUE_ID --sport NBA
+python -m fleaflicker_dashboard league scoreboard --league YOUR_LEAGUE_ID --sport NBA
 
 # Show league standings
-python fleaflicker_league_dashboard.py standings --league YOUR_LEAGUE_ID --sport NBA
+python -m fleaflicker_dashboard league standings --league YOUR_LEAGUE_ID --sport NBA
 
 # Compare your roster vs free agents by position
-python fleaflicker_league_dashboard.py compare --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA --position PG
+python -m fleaflicker_dashboard league compare --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA --position PG
 ```
 
 ## Features
@@ -38,7 +49,8 @@ python fleaflicker_league_dashboard.py compare --league YOUR_LEAGUE_ID --team YO
 - Hybrid scoring using 70% projections and 30% last-3-game averages.  
 - Highlighted upgrade suggestions when free agents outperform your current roster.
 
-## Files
-- `fleaflicker_tui.py`: Live TUI dashboard for your team.  
-- `fleaflicker_league_dashboard.py`: CLI/TUI for league scoreboard, standings, and comparisons.  
+## Project layout
+- `fleaflicker_dashboard/`: Shared package with the Fleaflicker API client, player helpers, table builders, reusable dashboard logic, and unified CLI (`python -m fleaflicker_dashboard`).  
+- `fleaflicker_dashboard.py`, `fleaflicker_league_dashboard.py`, `fleaflicker_tui.py`: Thin aliases to the single entry point for backwards compatibility.  
 - `requirements.txt`: List of Python dependencies.
+- `pyproject.toml`: Package metadata and console script entry point.
