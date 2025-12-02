@@ -18,35 +18,37 @@ from .models import (
 from .tables import player_table, scoreboard_table, standings_table
 from .tui import FleaflickerDashboardApp
 
+DEFAULT_SPORT = "NBA"
+
 
 def _add_league_subcommands(subparsers: argparse._SubParsersAction) -> None:
     league = subparsers.add_parser("league", help="League-level views and utilities")
     league_sub = league.add_subparsers(dest="action", required=True)
 
     scoreboard = league_sub.add_parser("scoreboard", help="Show the league scoreboard")
-    scoreboard.add_argument("--league", required=True)
-    scoreboard.add_argument("--sport", default="NFL")
-    scoreboard.add_argument("--scoring-period", type=int)
+    scoreboard.add_argument("--league", required=True, help="League ID")
+    scoreboard.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    scoreboard.add_argument("--scoring-period", type=int, help="Optional scoring period")
 
     standings = league_sub.add_parser("standings", help="Show league standings")
-    standings.add_argument("--league", required=True)
-    standings.add_argument("--sport", default="NFL")
+    standings.add_argument("--league", required=True, help="League ID")
+    standings.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
 
     roster = league_sub.add_parser("roster", help="Show a team roster")
-    roster.add_argument("--league", required=True)
-    roster.add_argument("--team", required=True)
-    roster.add_argument("--sport", default="NFL")
+    roster.add_argument("--league", required=True, help="League ID")
+    roster.add_argument("--team", required=True, help="Team ID")
+    roster.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
 
     free_agents = league_sub.add_parser("free-agents", help="List free agents")
-    free_agents.add_argument("--league", required=True)
-    free_agents.add_argument("--sport", default="NFL")
-    free_agents.add_argument("--position", help="Filter free agents by position")
+    free_agents.add_argument("--league", required=True, help="League ID")
+    free_agents.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    free_agents.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
 
     compare = league_sub.add_parser("compare", help="Compare roster against free agents")
-    compare.add_argument("--league", required=True)
-    compare.add_argument("--team", required=True)
-    compare.add_argument("--sport", default="NFL")
-    compare.add_argument("--position", help="Filter free agents by position")
+    compare.add_argument("--league", required=True, help="League ID")
+    compare.add_argument("--team", required=True, help="Team ID")
+    compare.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    compare.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
 
 
 def _add_team_subcommands(subparsers: argparse._SubParsersAction) -> None:
@@ -54,27 +56,27 @@ def _add_team_subcommands(subparsers: argparse._SubParsersAction) -> None:
     team_sub = team.add_subparsers(dest="action", required=True)
 
     compare = team_sub.add_parser("compare", help="Compare your roster against free agents")
-    compare.add_argument("--league", required=True)
-    compare.add_argument("--team", required=True)
-    compare.add_argument("--sport", default="NBA")
-    compare.add_argument("--position", help="Filter free agents by position")
+    compare.add_argument("--league", required=True, help="League ID")
+    compare.add_argument("--team", required=True, help="Team ID")
+    compare.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    compare.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
 
     scoreboard = team_sub.add_parser("scoreboard", help="Show the league scoreboard")
-    scoreboard.add_argument("--league", required=True)
-    scoreboard.add_argument("--sport", default="NBA")
-    scoreboard.add_argument("--scoring-period", type=int)
+    scoreboard.add_argument("--league", required=True, help="League ID")
+    scoreboard.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    scoreboard.add_argument("--scoring-period", type=int, help="Optional scoring period")
 
     standings = team_sub.add_parser("standings", help="Show league standings")
-    standings.add_argument("--league", required=True)
-    standings.add_argument("--sport", default="NBA")
+    standings.add_argument("--league", required=True, help="League ID")
+    standings.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
 
 
 def _add_tui_subcommand(subparsers: argparse._SubParsersAction) -> None:
     tui = subparsers.add_parser("tui", help="Launch the live Textual dashboard")
-    tui.add_argument("--league", required=True)
-    tui.add_argument("--team", required=True)
-    tui.add_argument("--sport", default="NFL")
-    tui.add_argument("--position", help="Filter free agents by position")
+    tui.add_argument("--league", required=True, help="League ID")
+    tui.add_argument("--team", required=True, help="Team ID")
+    tui.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    tui.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -85,7 +87,6 @@ def build_parser() -> argparse.ArgumentParser:
     _add_league_subcommands(subparsers)
     _add_team_subcommands(subparsers)
     _add_tui_subcommand(subparsers)
-    _add_legacy_shortcuts(subparsers)
     return parser
 
 
@@ -131,42 +132,6 @@ def _handle_tui(args: argparse.Namespace) -> None:
     app.run()
 
 
-def _add_legacy_shortcuts(subparsers: argparse._SubParsersAction) -> None:
-    """Compatibility aliases that map old entry points to the unified CLI."""
-    compare = subparsers.add_parser(
-        "compare", help="(legacy) Compare a roster against free agents"
-    )
-    compare.add_argument("--league", required=True)
-    compare.add_argument("--team", required=True)
-    compare.add_argument("--sport", default="NBA")
-    compare.add_argument("--position")
-
-    scoreboard = subparsers.add_parser(
-        "scoreboard", help="(legacy) Show league scoreboard"
-    )
-    scoreboard.add_argument("--league", required=True)
-    scoreboard.add_argument("--sport", default="NBA")
-    scoreboard.add_argument("--scoring-period", type=int)
-
-    standings = subparsers.add_parser(
-        "standings", help="(legacy) Show league standings"
-    )
-    standings.add_argument("--league", required=True)
-    standings.add_argument("--sport", default="NBA")
-
-    roster = subparsers.add_parser("roster", help="(legacy) Show a team roster")
-    roster.add_argument("--league", required=True)
-    roster.add_argument("--team", required=True)
-    roster.add_argument("--sport", default="NFL")
-
-    free_agents = subparsers.add_parser(
-        "free-agents", help="(legacy) Show free agents"
-    )
-    free_agents.add_argument("--league", required=True)
-    free_agents.add_argument("--sport", default="NFL")
-    free_agents.add_argument("--position")
-
-
 def main(argv: Optional[list[str]] = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -178,12 +143,6 @@ def main(argv: Optional[list[str]] = None) -> None:
         _handle_team(args, console)
     elif args.command == "tui":
         _handle_tui(args)
-    elif args.command in {"compare", "scoreboard", "standings"}:
-        args.action = args.command
-        _handle_team(args, console)
-    elif args.command in {"roster", "free-agents"}:
-        args.action = args.command
-        _handle_league(args, console)
     else:
         parser.print_help()
 

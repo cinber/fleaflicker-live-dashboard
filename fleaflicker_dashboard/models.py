@@ -23,18 +23,43 @@ class Player:
 
     @property
     def name(self) -> str:
-        return self.data.get("pro_player", {}).get("name_full", "Unknown")
+        pro = self.data.get("pro_player") or self.data.get("proPlayer") or {}
+        return (
+            pro.get("name_full")
+            or pro.get("nameFull")
+            or pro.get("name")
+            or self.data.get("name_full")
+            or self.data.get("nameFull")
+            or self.data.get("displayName")
+            or self.data.get("name")
+            or "Unknown"
+        )
 
     @property
     def position(self) -> str:
-        return self.data.get("pro_player", {}).get("position", "")
+        pro = self.data.get("pro_player") or self.data.get("proPlayer") or {}
+        return pro.get("position") or self.data.get("position") or ""
 
     @property
     def team(self) -> str:
-        return self.data.get("pro_player", {}).get("pro_team_abbreviation", "")
+        pro = self.data.get("pro_player") or self.data.get("proPlayer") or {}
+        return (
+            pro.get("pro_team_abbreviation")
+            or pro.get("proTeamAbbreviation")
+            or pro.get("pro_team")
+            or pro.get("team_abbreviation")
+            or pro.get("teamAbbreviation")
+            or ""
+        )
 
     def projection(self) -> float:
-        return float(self.data.get("projections", {}).get("value", 0.0))
+        projections = self.data.get("projections", {}) or self.data.get("projection", {})
+        value = projections.get("value")
+        if value is None and isinstance(projections, dict):
+            value = projections.get("weekly") or projections.get("season")
+            if isinstance(value, dict):
+                value = value.get("value")
+        return float(value or 0.0)
 
     def last_three(self) -> float:
         stats = self.data.get("last_x_points", [])

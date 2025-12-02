@@ -1,3 +1,4 @@
+# Synced with pyproject.toml
 requests
 rich
 textual

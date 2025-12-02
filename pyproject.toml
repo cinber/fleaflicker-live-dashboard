@@ -14,10 +14,37 @@ dependencies = [
   "textual",
 ]
 authors = [{ name = "cinaber" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Games/Entertainment :: Simulation",
+  "Topic :: Utilities",
+]
 
 [project.scripts]
 fleaflicker-dashboard = "fleaflicker_dashboard.cli:main"
-fleaflicker-dashboard-tui = "fleaflicker_dashboard.cli:main"
 
 [tool.setuptools]
-packages = ["fleaflicker_dashboard"]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+include = ["fleaflicker_dashboard*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true

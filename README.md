@@ -51,6 +51,5 @@ python -m fleaflicker_dashboard league compare --league YOUR_LEAGUE_ID --team YO
 
 ## Project layout
 - `fleaflicker_dashboard/`: Shared package with the Fleaflicker API client, player helpers, table builders, reusable dashboard logic, and unified CLI (`python -m fleaflicker_dashboard`).  
-- `fleaflicker_dashboard.py`, `fleaflicker_league_dashboard.py`, `fleaflicker_tui.py`: Thin aliases to the single entry point for backwards compatibility.  
-- `requirements.txt`: List of Python dependencies.
-- `pyproject.toml`: Package metadata and console script entry point.
+- `requirements.txt`: Synced list of Python dependencies.
+- `pyproject.toml`: Package metadata, console script entry point, and tooling config (ruff, black, mypy).

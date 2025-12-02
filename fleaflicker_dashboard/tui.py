@@ -6,7 +6,7 @@ import argparse
 from typing import Optional
 
 from rich.console import Console
-from textual.app import App, ComposeResult
+from textual.app import App
 from textual.containers import Horizontal
 from textual.widgets import DataTable, Footer, Header
 
@@ -41,7 +41,7 @@ class FleaflickerDashboardApp(App):
         self.free_agent_table.add_columns(*headers)
         self.recommendation_table.add_columns("Free Agent", "Replace", "Diff")
 
-        await self.mount(Header())
+        await self.mount(Header(show_clock=False))
         self.container = Horizontal()
         await self.mount(self.container)
         await self.container.mount(self.roster_table)
@@ -63,9 +63,14 @@ class FleaflickerDashboardApp(App):
         self.roster_players = roster_players_from_json(roster_json)
         self.free_agent_players = free_agent_players_from_json(free_agents_json)
 
-        self.roster_table.clear(rows=True)
-        self.free_agent_table.clear(rows=True)
-        self.recommendation_table.clear(rows=True)
+        self.roster_table.clear()
+        self.free_agent_table.clear()
+        self.recommendation_table.clear()
+
+        if not self.roster_players:
+            self.console.log("No roster data returned; check league/team IDs and sport.")
+        if not self.free_agent_players:
+            self.console.log("No free agent data returned; check sport/position filters.")
 
         for player in self.roster_players:
             self.roster_table.add_row(
@@ -94,10 +99,6 @@ class FleaflickerDashboardApp(App):
                 roster_player.name,
                 f"{diff:+.2f}",
             )
-
-    def compose(self) -> ComposeResult:
-        yield
-
 
 def build_app(args: argparse.Namespace) -> FleaflickerDashboardApp:
     api = FleaflickerAPI(league_id=args.league, team_id=args.team, sport=args.sport)
