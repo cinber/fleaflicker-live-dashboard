@@ -42,6 +42,15 @@ python -m fleaflicker_dashboard league standings --league YOUR_LEAGUE_ID --sport
 python -m fleaflicker_dashboard league compare --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA --position PG
 ```
 
+### Live web dashboard (Flask)
+Start a local web server with a live-updating dashboard:
+
+```
+python -m fleaflicker_dashboard web --league YOUR_LEAGUE_ID --team YOUR_TEAM_ID --sport NBA --port 8000
+```
+
+Then open http://127.0.0.1:8000/ in your browser. Use `--host`/`--port` to override defaults and `--position` to filter free agents.
+
 ## Features
 - Live auto-updating dashboard every 10 seconds.  
 - Displays your roster, free agents, and upgrade recommendations.  

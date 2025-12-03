@@ -17,6 +17,7 @@ from .models import (
 )
 from .tables import player_table, scoreboard_table, standings_table
 from .tui import FleaflickerDashboardApp
+from .web import run_web_dashboard
 
 DEFAULT_SPORT = "NBA"
 
@@ -79,6 +80,16 @@ def _add_tui_subcommand(subparsers: argparse._SubParsersAction) -> None:
     tui.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
 
 
+def _add_web_subcommand(subparsers: argparse._SubParsersAction) -> None:
+    web = subparsers.add_parser("web", help="Launch the live web dashboard")
+    web.add_argument("--league", required=True, help="League ID")
+    web.add_argument("--team", required=True, help="Team ID")
+    web.add_argument("--sport", default=DEFAULT_SPORT, help="Sport (e.g. NFL, NBA)")
+    web.add_argument("--position", help="Filter free agents by position code (PG, SG, QB, etc.)")
+    web.add_argument("--host", default="127.0.0.1", help="Host interface to bind (default: 127.0.0.1)")
+    web.add_argument("--port", type=int, default=8000, help="Port to run the web server (default: 8000)")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Unified Fleaflicker dashboard application (CLI + TUI)"
@@ -87,6 +98,7 @@ def build_parser() -> argparse.ArgumentParser:
     _add_league_subcommands(subparsers)
     _add_team_subcommands(subparsers)
     _add_tui_subcommand(subparsers)
+    _add_web_subcommand(subparsers)
     return parser
 
 
@@ -132,6 +144,16 @@ def _handle_tui(args: argparse.Namespace) -> None:
     app.run()
 
 
+def _handle_web(args: argparse.Namespace) -> None:
+    api = FleaflickerAPI(args.league, team_id=args.team, sport=args.sport)
+    run_web_dashboard(
+        api=api,
+        position=args.position,
+        host=args.host,
+        port=args.port,
+    )
+
+
 def main(argv: Optional[list[str]] = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -143,6 +165,8 @@ def main(argv: Optional[list[str]] = None) -> None:
         _handle_team(args, console)
     elif args.command == "tui":
         _handle_tui(args)
+    elif args.command == "web":
+        _handle_web(args)
     else:
         parser.print_help()
 
