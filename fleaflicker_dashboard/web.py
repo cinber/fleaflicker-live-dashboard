@@ -1,5 +1,6 @@
 """Flask-powered web dashboard for live league data."""
 
+from flask import Flask, jsonify, render_template_string, request
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -365,9 +366,23 @@ def create_app(api: FleaflickerAPI, position: Optional[str] = None) -> Flask:
             position=position or "Any",
         )
 
-    @app.get("/api/dashboard")
-    def dashboard_data() -> Any:
+ @app.get("/api/teams")
+    def teams() -> Any:
         try:
+            teams_list = api.fetch_teams()
+            return jsonify(teams_list)
+        except Exception as exc:
+            console.print(f"[red]Error fetching teams:[/red] {exc}")
+            return jsonify({"error": str(exc)}), 500
+
+@app.get("/api/dashboard")
+    def dashboard_data() -> Any:
+  team_param = request.args.get("team_id")
+        local_api = api
+        if team_param:
+            local_api = FleaflickerAPI(api.league_id, int(team_param), api.sport)
+
+try:
             payload = _build_payload(api, position)
             return jsonify(payload)
         except Exception as exc:  # pragma: no cover - defensive
